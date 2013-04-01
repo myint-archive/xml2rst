@@ -1,3 +1,2 @@
-include tests.tgz
 include version.py
 include xml2rstlib/*.xsl
