@@ -40,9 +40,6 @@ from optparse import OptionGroup
 from xml2rstlib import rst_xslt
 
 
-global options
-
-
 def pod2Head(pod):
     """@param pod: Snippet in POD format to be analyzed.
 
@@ -168,7 +165,6 @@ def parseOptions():
     @rtype: ( str, [str,] )
 
     """
-    global options
     pod = """
 
 =head1 OPTIONS
@@ -295,7 +291,7 @@ If not given output is put to C<STDOUT>.
 
 =cut
     """
-    (options, args, ) = optionParser.parse_args()
+    (options, args) = optionParser.parse_args()
 
     if len(args) < 1:
         optionParser.error('An input file is required')
@@ -306,7 +302,7 @@ If not given output is put to C<STDOUT>.
                       options.adornment) is None):
         optionParser.error('Invalid adornment string given')
 
-    return args
+    return (options, args)
 
 
 def errorOut(lines):
@@ -322,22 +318,6 @@ def errorOut(lines):
     scriptName = os.path.basename(sys.argv[0])
     for line in lines:
         print(('%s: %s' % (scriptName, line, )), file=sys.stderr)
-    return 0
-
-
-def verboseOut(lines):
-    """Outputs messages as a verbose message.
-
-    @param lines: Messages to be output as single lines.
-    @type lines: ( str, ..., )
-
-    @return: 0
-    @rtype: int
-
-    """
-    if options.verbose:
-        errorOut(['## ' + line
-                  for line in lines])
     return 0
 
 
@@ -358,7 +338,7 @@ def errorExit(code, lines):
 
 
 if __name__ == '__main__':
-    arguments = parseOptions()
+    (options, arguments) = parseOptions()
     inF = arguments[0]
     if len(arguments) > 1:
         outF = arguments[1]
@@ -368,8 +348,6 @@ if __name__ == '__main__':
         rst_xslt.convert(inF, outF, options)
     except Exception as e:
         errorExit(1, e)
-
-
 
 
 # TODO Accept additional XSLT sheets to create a transformation pipeline
