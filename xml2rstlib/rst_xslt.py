@@ -139,7 +139,7 @@ def convert(inNm, outNm, settings):
     """
     try:
         inF = open(inNm)
-    except IOError, e:
+    except IOError as e:
         raise Exception("Can't open input file %r: %s" % ( inNm, e, ))
 
     # Find XSLT
@@ -147,14 +147,14 @@ def convert(inNm, outNm, settings):
     mainXsltNm = os.path.join(modP, MainXsltNm)
     try:
         mainXsltF = open(mainXsltNm)
-    except IOError, e:
+    except IOError as e:
         raise Exception("Can't open main XSLT file %r: %s" % ( mainXsltNm, e, ))
 
     # Parse and prepare XSLT and extensions
     xsltParser = etree.XMLParser()
     try:
         mainXsltDoc = etree.parse(mainXsltF, xsltParser)
-    except Exception, e:
+    except Exception as e:
         raise Exception("Error parsing main XSLT file %r: %s"
                         % ( mainXsltNm, e, ))
     mainXsltF.close()
@@ -167,7 +167,7 @@ def convert(inNm, outNm, settings):
     inParser = etree.XMLParser()
     try:
         inDoc = etree.parse(inF, inParser)
-    except Exception, e:
+    except Exception as e:
         raise Exception("Error parsing input file %r: %s" % ( inNm, e, ))
     inF.close()
 
@@ -179,13 +179,13 @@ def convert(inNm, outNm, settings):
         xsltParams['adornment'] = "'" + settings.adornment + "'"
     try:
         result = mainXslt(inDoc, **xsltParams)
-    except Exception, e:
+    except Exception as e:
         raise Exception("Error transforming input file %r: %s" % ( inNm, e, ))
     outS = str(result)
     if outNm:
         try:
             outF = open(outNm, "w")
-        except IOError, e:
+        except IOError as e:
             raise Exception("Can't open output file %r: %s" % ( outNm, e, ))
         outF.write(outS)
         outF.close()

@@ -30,6 +30,8 @@ Do
 for a man page.
 """
 
+from __future__ import print_function
+
 """
 =head1 NAME
 
@@ -157,7 +159,7 @@ def pod2OptionKeywords(pod):
         else:
             result['help'] += line + "\n"
     result['help'] = result['help'].strip()
-    if result.has_key('dest'):
+    if 'dest' in result:
         result['dest'] = result['dest'].replace("-", "_")
     else:
         errorExit(1, ( "Internal error: Missing `dest' in documentation string:",
@@ -354,7 +356,7 @@ def errorOut(lines):
     """
     scriptName = os.path.basename(sys.argv[0])
     for line in lines:
-        print >>sys.stderr, ("%s: %s" % ( scriptName, line, ))
+        print(("%s: %s" % ( scriptName, line, )), file=sys.stderr)
     return 0
 
 ###############################################################################
@@ -412,7 +414,7 @@ if __name__ == '__main__':
         outF = None
     try:
         rst_xslt.convert(inF, outF, options)
-    except Exception, e:
+    except Exception as e:
         errorExit(1, e)
 
 ##############################################################################
