@@ -2,19 +2,11 @@
 Python based conversion.
 """
 
-#
-#
-# Import
-
 import re
 import docutils
 import docutils.parsers.rst.states
 
 __docformat__ = 'reStructuredText'
-
-#
-#
-# Classes
 
 
 class Inliner(docutils.parsers.rst.states.Inliner):

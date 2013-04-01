@@ -25,7 +25,7 @@ Convert a docutils XML file to reStructuredText syntax.
 
 Do
 
-	perldoc xml2rst.py
+    perldoc xml2rst.py
 
 for a man page.
 """
@@ -53,9 +53,6 @@ a transformation to docutils XML.
 =cut
 """
 
-#
-#
-# Import
 
 import sys
 import os.path
@@ -66,19 +63,12 @@ from optparse import OptionGroup
 
 from xml2rstlib import rst_xslt
 
-#
-#
-# Variables
 
 """
 @var options: Options given on the command line
 @type options: optparse.Values
 """
 global options
-
-#
-#
-# General functions
 
 
 def pod2Head(pod):
@@ -96,8 +86,6 @@ def pod2Head(pod):
             return line[len('=headX'):].strip()
     return ''
 
-#
-
 
 def pod2Description(pod):
     """@param pod: Snippet in POD format to be analyzed.
@@ -114,11 +102,11 @@ def pod2Description(pod):
             result = result.strip() + ' ' + line.strip()
     return result.strip()
 
-#
-
 
 def pod2OptionList(pod):
-    """Return option names found in POD snippet. Option names are recognized
+    """Return option names found in POD snippet.
+
+    Option names are recognized
     in.
 
     `=item B<option>' constructs.
@@ -136,8 +124,6 @@ def pod2OptionList(pod):
         if found:
             result.append(found.group(1))
     return result
-
-#
 
 
 def pod2OptionKeywords(pod):
@@ -176,8 +162,6 @@ def pod2OptionKeywords(pod):
                 pod, ))
     return result
 
-#
-
 
 def pod2Argument(pod):
     """Return a list of two strings for `OptionGroup.__init__' describing the
@@ -203,8 +187,6 @@ def pod2Argument(pod):
             description += line + '\n'
     description = description.strip()
     return [argument, description, ]
-
-#
 
 
 def parseOptions():
@@ -354,8 +336,6 @@ If not given output is put to C<STDOUT>.
 
     return args
 
-#
-
 
 def errorOut(lines):
     """Outputs messages as error.
@@ -371,8 +351,6 @@ def errorOut(lines):
     for line in lines:
         print(('%s: %s' % (scriptName, line, )), file=sys.stderr)
     return 0
-
-#
 
 
 def verboseOut(lines):
@@ -390,8 +368,6 @@ def verboseOut(lines):
                   for line in lines])
     return 0
 
-#
-
 
 def errorExit(code, lines):
     """Exit program with an error message.
@@ -408,17 +384,6 @@ def errorExit(code, lines):
     errorOut(lines)
     sys.exit(code)
 
-#
-#
-# Specialized functions
-
-#
-#
-# Classes
-
-#
-#
-# Now work
 
 if __name__ == '__main__':
     arguments = parseOptions()
@@ -432,8 +397,8 @@ if __name__ == '__main__':
     except Exception as e:
         errorExit(1, e)
 
-#
-#
+
+
 
 # TODO Accept additional XSLT sheets to create a transformation pipeline
 

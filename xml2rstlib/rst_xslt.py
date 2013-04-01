@@ -1,10 +1,4 @@
-"""
-Glue code for XSLT and Python based conversion.
-"""
-
-#
-#
-# Import
+"""Glue code for XSLT and Python based conversion."""
 
 import os.path
 import sys
@@ -21,19 +15,11 @@ from xml2rstlib import markup
 
 __docformat__ = 'reStructuredText'
 
-#
-#
-# Constants
-
 MainXsltNm = 'xml2rst.xsl'
 """
 `MainXsltNm`: ``str``
    Name of the main XSLT source file.
 """
-
-#
-#
-# Classes
 
 
 class XPathExtension():
@@ -72,8 +58,6 @@ class XPathExtension():
         """
         return boolean
 
-#
-
 
 class RstText(XPathExtension):
 
@@ -110,21 +94,6 @@ class RstText(XPathExtension):
         return markup.Text.plain(self._stringParameter(string),
                                  self._stringParameter(indent),
                                  self._boolParameter(literal))
-
-    # indent
-    # directive
-    # field_names
-    # substitution
-    # inline markup
-    # token
-    # label
-    # start_delimiter
-    # end_delimiter
-    # target_definition
-
-#
-#
-# Specialized functions
 
 
 def convert(inNm, outNm, settings):
