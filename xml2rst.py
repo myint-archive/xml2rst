@@ -340,6 +340,16 @@ def errorExit(code, lines):
 if __name__ == '__main__':
     (options, arguments) = parseOptions()
     inF = arguments[0]
+
+    if inF == '-':
+        import tempfile
+        temporary_file = tempfile.NamedTemporaryFile(mode='w')
+        temporary_file.write(sys.stdin.read())
+        temporary_file.flush()
+        inF = temporary_file.name
+    else:
+        temporary_file = None
+
     if len(arguments) > 1:
         outF = arguments[1]
     else:
@@ -348,6 +358,9 @@ if __name__ == '__main__':
         rst_xslt.convert(inF, outF, options)
     except Exception as e:
         errorExit(1, e)
+    finally:
+        if temporary_file:
+            temporary_file.close()
 
 
 # TODO Accept additional XSLT sheets to create a transformation pipeline
