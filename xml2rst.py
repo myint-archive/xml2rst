@@ -53,20 +53,21 @@ a transformation to docutils XML.
 =cut
 """
 
-###############################################################################
-###############################################################################
+#
+#
 # Import
 
 import sys
 import os.path
 import re
 
-from optparse import OptionParser, OptionGroup, OptionValueError, Option
+from optparse import OptionParser
+from optparse import OptionGroup
 
 from xml2rstlib import rst_xslt
 
-###############################################################################
-###############################################################################
+#
+#
 # Variables
 
 """
@@ -75,45 +76,51 @@ from xml2rstlib import rst_xslt
 """
 global options
 
-###############################################################################
-###############################################################################
+#
+#
 # General functions
 
+
 def pod2Head(pod):
-    """
-    @param pod: Snippet in POD format to be analyzed.
+    """@param pod: Snippet in POD format to be analyzed.
+
     @type pod: str
 
     @return: String of first `=headX' entry in POD snippet or empty string if
              none found.
     @rtype: str
-    """
-    for line in pod.split("\n"):
-        if line.startswith("=head"):
-            return line[len("=headX"):].strip()
-    return ""
 
-###############################################################################
+    """
+    for line in pod.split('\n'):
+        if line.startswith('=head'):
+            return line[len('=headX'):].strip()
+    return ''
+
+#
+
 
 def pod2Description(pod):
-    """
-    @param pod: Snippet in POD format to be analyzed.
+    """@param pod: Snippet in POD format to be analyzed.
+
     @type pod: str
 
     @return: Stripped text from all lines not being a POD line command.
     @rtype: str
+
     """
-    result = ""
-    for line in pod.split("\n"):
-        if not line.startswith("="):
-            result = result.strip() + " " + line.strip()
+    result = ''
+    for line in pod.split('\n'):
+        if not line.startswith('='):
+            result = result.strip() + ' ' + line.strip()
     return result.strip()
 
-###############################################################################
+#
+
 
 def pod2OptionList(pod):
-    """
-    Return option names found in POD snippet. Option names are recognized in
+    """Return option names found in POD snippet. Option names are recognized
+    in.
+
     `=item B<option>' constructs.
 
     @param pod: Snippet in POD format to be analyzed.
@@ -121,20 +128,21 @@ def pod2OptionList(pod):
 
     @return: All option names contained in POD snippet as a list.
     @rtype: [ str, ..., ]
+
     """
-    result = [ ]
-    for line in pod.split("\n"):
-        found = re.search("^=item\s*B<(-[^>]+)>", line)
+    result = []
+    for line in pod.split('\n'):
+        found = re.search('^=item\s*B<(-[^>]+)>', line)
         if found:
             result.append(found.group(1))
     return result
 
-###############################################################################
+#
+
 
 def pod2OptionKeywords(pod):
-    """
-    Return a dict mapping `OptionParser.add_option' keywords to values found in
-    POD snippet.
+    """Return a dict mapping `OptionParser.add_option' keywords to values found
+    in POD snippet.
 
     @param pod: Snippet in POD format to be analyzed.
     @type pod: str
@@ -142,35 +150,37 @@ def pod2OptionKeywords(pod):
     @return: Mapping for all values found. Currently `help' and `dest' are
              filled.
     @rtype: { keyword: value, ..., }
+
     """
-    result = { 'help': "", }
-    for line in pod.split("\n"):
-        if line.startswith("=cut"):
+    result = {'help': '', }
+    for line in pod.split('\n'):
+        if line.startswith('=cut'):
             break
-        found = re.search("^=item\s*B<--?([^>]+)>(?:=|\s*)", line)
+        found = re.search('^=item\s*B<--?([^>]+)>(?:=|\s*)', line)
         if found:
-            result['help'] = ""
+            result['help'] = ''
             optionName = found.group(1)
-            found = re.search("I<([^>]+)>", line)
+            found = re.search('I<([^>]+)>', line)
             if found:
                 result['dest'] = found.group(1)
             elif len(optionName) > 1:
                 result['dest'] = optionName
         else:
-            result['help'] += line + "\n"
+            result['help'] += line + '\n'
     result['help'] = result['help'].strip()
     if 'dest' in result:
-        result['dest'] = result['dest'].replace("-", "_")
+        result['dest'] = result['dest'].replace('-', '_')
     else:
-        errorExit(1, ( "Internal error: Missing `dest' in documentation string:",
-                       pod, ))
+        errorExit(
+            1, ("Internal error: Missing `dest' in documentation string:",
+                pod, ))
     return result
 
-###############################################################################
+#
+
 
 def pod2Argument(pod):
-    """
-    Return a list of two strings for `OptionGroup.__init__' describing the
+    """Return a list of two strings for `OptionGroup.__init__' describing the
     argument found in POD snippet.
 
     @param pod: Snippet in POD format to be analyzed.
@@ -178,29 +188,31 @@ def pod2Argument(pod):
 
     @return: Name of the argument and its description.
     @rtype: [ argument, description, ]
+
     """
-    argument = ""
-    description = ""
-    for line in pod.split("\n"):
-        if line.startswith("=cut"):
+    argument = ''
+    description = ''
+    for line in pod.split('\n'):
+        if line.startswith('=cut'):
             break
-        found = re.search("^=item\s*I<([^>]+)>", line)
+        found = re.search('^=item\s*I<([^>]+)>', line)
         if found:
-            description = ""
+            description = ''
             argument = found.group(1)
         else:
-            description += line + "\n"
+            description += line + '\n'
     description = description.strip()
-    return [ argument, description, ]
+    return [argument, description, ]
 
-###############################################################################
+#
+
 
 def parseOptions():
-    """
-    Sets options and returns arguments.
+    """Sets options and returns arguments.
 
     @return: Name of input file and optionally of output file.
     @rtype: ( str, [str,] )
+
     """
     global options
     pod = """
@@ -209,7 +221,7 @@ def parseOptions():
 
 =cut
     """
-    optionParser = OptionParser("usage: %prog [option]... <xml> [<rst>]")
+    optionParser = OptionParser('usage: %prog [option]... <xml> [<rst>]')
 
     pod = """
 
@@ -267,7 +279,7 @@ Defaults to C<0>, i.e. no folding.
 
 =cut
     """
-    generalGroup.add_option(type="int", default=None,
+    generalGroup.add_option(type='int', default=None,
                             *pod2OptionList(pod), **pod2OptionKeywords(pod))
 
     pod = """
@@ -280,7 +292,7 @@ Operate verbose.
 
 =cut
     """
-    generalGroup.add_option(action="store_true",
+    generalGroup.add_option(action='store_true',
                             *pod2OptionList(pod), **pod2OptionKeywords(pod))
     optionParser.add_option_group(generalGroup)
 
@@ -329,58 +341,60 @@ If not given output is put to C<STDOUT>.
 
 =cut
     """
-    ( options, args, ) = optionParser.parse_args()
+    (options, args, ) = optionParser.parse_args()
 
     if len(args) < 1:
-        optionParser.error("An input file is required")
+        optionParser.error('An input file is required')
     if len(args) > 2:
-        optionParser.error("At most two arguments are allowed")
+        optionParser.error('At most two arguments are allowed')
     if (options.adornment is not None
         and re.search('^([ou][]!"#$%&\'()*+,\-./:;<=>?@[\\^_`{|}~])+$',
                       options.adornment) is None):
-        optionParser.error("Invalid adornment string given")
+        optionParser.error('Invalid adornment string given')
 
     return args
 
-###############################################################################
+#
+
 
 def errorOut(lines):
-    """
-    Outputs messages as error.
+    """Outputs messages as error.
 
     @param lines: Messages to be output as single lines.
     @type lines: ( str, ..., )
 
     @return: 0
     @rtype: int
+
     """
     scriptName = os.path.basename(sys.argv[0])
     for line in lines:
-        print(("%s: %s" % ( scriptName, line, )), file=sys.stderr)
+        print(('%s: %s' % (scriptName, line, )), file=sys.stderr)
     return 0
 
-###############################################################################
+#
+
 
 def verboseOut(lines):
-    """
-    Outputs messages as a verbose message.
+    """Outputs messages as a verbose message.
 
     @param lines: Messages to be output as single lines.
     @type lines: ( str, ..., )
 
     @return: 0
     @rtype: int
+
     """
     if options.verbose:
-        errorOut([ "## " + line
-                   for line in lines ])
+        errorOut(['## ' + line
+                  for line in lines])
     return 0
 
-###############################################################################
+#
+
 
 def errorExit(code, lines):
-    """
-    Exit program with an error message.
+    """Exit program with an error message.
 
     @param code: Exit Code to use.
     @type code: int
@@ -389,20 +403,21 @@ def errorExit(code, lines):
     @type lines: ( str, ..., )
 
     @return: Does not return.
+
     """
     errorOut(lines)
     sys.exit(code)
 
-###############################################################################
-###############################################################################
+#
+#
 # Specialized functions
 
-###############################################################################
-###############################################################################
+#
+#
 # Classes
 
-########################################################################
-##############################################################################
+#
+#
 # Now work
 
 if __name__ == '__main__':
@@ -417,8 +432,8 @@ if __name__ == '__main__':
     except Exception as e:
         errorExit(1, e)
 
-##############################################################################
-##############################################################################
+#
+#
 
 # TODO Accept additional XSLT sheets to create a transformation pipeline
 

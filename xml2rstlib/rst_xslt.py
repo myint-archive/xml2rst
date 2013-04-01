@@ -2,8 +2,8 @@
 Glue code for XSLT and Python based conversion.
 """
 
-###############################################################################
-###############################################################################
+#
+#
 # Import
 
 import os.path
@@ -21,8 +21,8 @@ from xml2rstlib import markup
 
 __docformat__ = 'reStructuredText'
 
-###############################################################################
-###############################################################################
+#
+#
 # Constants
 
 MainXsltNm = 'xml2rst.xsl'
@@ -31,59 +31,60 @@ MainXsltNm = 'xml2rst.xsl'
    Name of the main XSLT source file.
 """
 
-###############################################################################
-###############################################################################
+#
+#
 # Classes
 
-class XPathExtension():
-    """
-    Abstract class for XPath extension functions.
-    """
 
-    namespace = "http://www.merten-home.de/xml2rst"
+class XPathExtension():
+
+    """Abstract class for XPath extension functions."""
+
+    namespace = 'http://www.merten-home.de/xml2rst'
     """
     `namespace`: ``str``
       Namespace for these XSLT extension functions.
     """
 
     def _stringParameter(self, string):
-        """
-        Return the normalized string parameter from an XPath
-        parameter.
+        """Return the normalized string parameter from an XPath parameter.
 
         `string`: ``lxml.etree._ElementStringResult`` | ``[ lxml.etree._ElementStringResult, ]`` | ``[ ]``
           Original XPath string parameter.
+
         """
         if isinstance(string, list):
             if len(string) == 0:
-                return ""
+                return ''
             else:
-                assert len(string) == 1, "Encountered an XPath string parameter with more than one element"
+                assert len(
+                    string) == 1, 'Encountered an XPath string parameter with more than one element'
                 return string[0]
         else:
             return string
 
     def _boolParameter(self, boolean):
-        """
-        Return the normalized bool parameter from an XPath parameter.
+        """Return the normalized bool parameter from an XPath parameter.
 
         `boolean`: ``bool``
           Original XPath bool parameter.
+
         """
         return boolean
 
-###############################################################################
+#
+
 
 class RstText(XPathExtension):
-    """
-    XPath extension functions for computing valid reStructuredText
-    markup for plain text.
-    """
+
+    """XPath extension functions for computing valid reStructuredText markup
+    for plain text."""
 
     def plain(self, context, string, indent, literal):
-        """
-        Output a plain text preventing further interpretation by
-        reStructuredText. Text may contain linefeeds.
+        """Output a plain text preventing further interpretation by
+        reStructuredText.
+
+        Text may contain linefeeds.
 
         `context`: ``lxml.etree._XSLTContext``
           The evaluation context.
@@ -104,6 +105,7 @@ class RstText(XPathExtension):
         `literal`:
           The (smart) string to use for indent in case of internal
           linefeeds.
+
         """
         return markup.Text.plain(self._stringParameter(string),
                                  self._stringParameter(indent),
@@ -120,13 +122,13 @@ class RstText(XPathExtension):
     # end_delimiter
     # target_definition
 
-###############################################################################
-###############################################################################
+#
+#
 # Specialized functions
 
+
 def convert(inNm, outNm, settings):
-    """
-    Do the conversion.
+    """Do the conversion.
 
     `inNm`: ``str``
       Filename of input file.
@@ -136,11 +138,12 @@ def convert(inNm, outNm, settings):
 
     `settings`: ``optparse.Values``
       Options from command line.
+
     """
     try:
         inF = open(inNm)
     except IOError as e:
-        raise Exception("Can't open input file %r: %s" % ( inNm, e, ))
+        raise Exception("Can't open input file %r: %s" % (inNm, e, ))
 
     # Find XSLT
     modP = os.path.dirname(__file__)
@@ -148,15 +151,15 @@ def convert(inNm, outNm, settings):
     try:
         mainXsltF = open(mainXsltNm)
     except IOError as e:
-        raise Exception("Can't open main XSLT file %r: %s" % ( mainXsltNm, e, ))
+        raise Exception("Can't open main XSLT file %r: %s" % (mainXsltNm, e, ))
 
     # Parse and prepare XSLT and extensions
     xsltParser = etree.XMLParser()
     try:
         mainXsltDoc = etree.parse(mainXsltF, xsltParser)
     except Exception as e:
-        raise Exception("Error parsing main XSLT file %r: %s"
-                        % ( mainXsltNm, e, ))
+        raise Exception('Error parsing main XSLT file %r: %s'
+                        % (mainXsltNm, e, ))
     mainXsltF.close()
 
     rstText = RstText()
@@ -168,11 +171,11 @@ def convert(inNm, outNm, settings):
     try:
         inDoc = etree.parse(inF, inParser)
     except Exception as e:
-        raise Exception("Error parsing input file %r: %s" % ( inNm, e, ))
+        raise Exception('Error parsing input file %r: %s' % (inNm, e, ))
     inF.close()
 
     # Process input
-    xsltParams = { }
+    xsltParams = {}
     if settings.fold is not None:
         xsltParams['fold'] = str(settings.fold)
     if settings.adornment is not None:
@@ -180,13 +183,13 @@ def convert(inNm, outNm, settings):
     try:
         result = mainXslt(inDoc, **xsltParams)
     except Exception as e:
-        raise Exception("Error transforming input file %r: %s" % ( inNm, e, ))
+        raise Exception('Error transforming input file %r: %s' % (inNm, e, ))
     outS = str(result)
     if outNm:
         try:
-            outF = open(outNm, "w")
+            outF = open(outNm, 'w')
         except IOError as e:
-            raise Exception("Can't open output file %r: %s" % ( outNm, e, ))
+            raise Exception("Can't open output file %r: %s" % (outNm, e, ))
         outF.write(outS)
         outF.close()
     else:
