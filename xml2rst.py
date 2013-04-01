@@ -40,124 +40,6 @@ from optparse import OptionGroup
 from xml2rstlib import rst_xslt
 
 
-def pod2Head(pod):
-    """@param pod: Snippet in POD format to be analyzed.
-
-    @type pod: str
-
-    @return: String of first `=headX' entry in POD snippet or empty string if
-             none found.
-    @rtype: str
-
-    """
-    for line in pod.split('\n'):
-        if line.startswith('=head'):
-            return line[len('=headX'):].strip()
-    return ''
-
-
-def pod2Description(pod):
-    """@param pod: Snippet in POD format to be analyzed.
-
-    @type pod: str
-
-    @return: Stripped text from all lines not being a POD line command.
-    @rtype: str
-
-    """
-    result = ''
-    for line in pod.split('\n'):
-        if not line.startswith('='):
-            result = result.strip() + ' ' + line.strip()
-    return result.strip()
-
-
-def pod2OptionList(pod):
-    """Return option names found in POD snippet.
-
-    Option names are recognized
-    in.
-
-    `=item B<option>' constructs.
-
-    @param pod: Snippet in POD format to be analyzed.
-    @type pod: str
-
-    @return: All option names contained in POD snippet as a list.
-    @rtype: [ str, ..., ]
-
-    """
-    result = []
-    for line in pod.split('\n'):
-        found = re.search('^=item\s*B<(-[^>]+)>', line)
-        if found:
-            result.append(found.group(1))
-    return result
-
-
-def pod2OptionKeywords(pod):
-    """Return a dict mapping `OptionParser.add_option' keywords to values found
-    in POD snippet.
-
-    @param pod: Snippet in POD format to be analyzed.
-    @type pod: str
-
-    @return: Mapping for all values found. Currently `help' and `dest' are
-             filled.
-    @rtype: { keyword: value, ..., }
-
-    """
-    result = {'help': '', }
-    for line in pod.split('\n'):
-        if line.startswith('=cut'):
-            break
-        found = re.search('^=item\s*B<--?([^>]+)>(?:=|\s*)', line)
-        if found:
-            result['help'] = ''
-            optionName = found.group(1)
-            found = re.search('I<([^>]+)>', line)
-            if found:
-                result['dest'] = found.group(1)
-            elif len(optionName) > 1:
-                result['dest'] = optionName
-        else:
-            result['help'] += line + '\n'
-    result['help'] = result['help'].strip()
-    if 'dest' in result:
-        result['dest'] = result['dest'].replace('-', '_')
-    else:
-        errorExit(
-            1, ("Internal error: Missing `dest' in documentation string:",
-                pod, ))
-    return result
-
-
-def pod2Argument(pod):
-    """Return a list of two strings for `OptionGroup.__init__' describing the
-    argument found in POD snippet.
-
-    @param pod: Snippet in POD format to be analyzed.
-    @type pod: str
-
-    @return: Name of the argument and its description.
-    @rtype: [ argument, description, ]
-
-    """
-    argument = ''
-    description = ''
-    for line in pod.split('\n'):
-        if line.startswith('=cut'):
-            break
-        found = re.search('^=item\s*I<([^>]+)>', line)
-        if found:
-            description = ''
-            argument = found.group(1)
-        else:
-            description += line + '\n'
-    description = description.strip()
-    return [argument, description, ]
-
-
 def parseOptions():
     """Sets options and returns arguments.
 
@@ -165,31 +47,12 @@ def parseOptions():
     @rtype: ( str, [str,] )
 
     """
-    pod = """
-
-=head1 OPTIONS
-
-=cut
-    """
     optionParser = OptionParser('usage: %prog [option]... <xml> [<rst>]')
 
-    pod = """
+    generalGroup = OptionGroup(optionParser, 'General options')
 
-=head2 General options
-
-=over 4
-
-=cut
-    """
-    generalGroup = OptionGroup(optionParser, pod2Head(pod),
-                               pod2Description(pod))
-
-    pod = """
-
-=item B<-a> I<adornment>
-
-=item B<--adornment>=I<adornment>
-
+    generalGroup.add_option('-a', '--adornment', default=None,
+                            help="""
 Configures title markup to use so different styles can be requested
 easily.
 
@@ -201,20 +64,10 @@ the markup.
 The first and the second character pair is used for document title and
 subtitle, the following pairs are used for section titles where the
 third pair is used for the top level section title.
+""")
 
-Defaults to C<o=o-u=u-u~u:u.u`>.
-
-=cut
-    """
-    generalGroup.add_option(default=None, *pod2OptionList(pod),
-                            **pod2OptionKeywords(pod))
-
-    pod = """
-
-=item B<-f> I<fold>
-
-=item B<--fold>=I<fold>
-
+    generalGroup.add_option('-f', '--fold', type='int', default=None,
+                            help="""
 Configures whether long text lines in paragraphs should be folded and
 to which length. This option is for input not coming from reST which
 may have no internal line feeds in plain text strings.
@@ -224,73 +77,26 @@ context are first white-space normalized and then broken according to
 the folding rules. Folding rules put out the first word and continue
 to do so with the following words unless the next word would cross
 the folding boundary. Words are delimited by white-space.
+""")
 
-Defaults to C<0>, i.e. no folding.
-
-=cut
-    """
-    generalGroup.add_option(type='int', default=None,
-                            *pod2OptionList(pod), **pod2OptionKeywords(pod))
-
-    pod = """
-
-=item B<-v>
-
-=item B<--verbose>
-
-Operate verbose.
-
-=cut
-    """
-    generalGroup.add_option(action='store_true',
-                            *pod2OptionList(pod), **pod2OptionKeywords(pod))
+    generalGroup.add_option('-v', '--verbose', action='store_true',
+                            help='Operate verbose.')
     optionParser.add_option_group(generalGroup)
 
-    pod = """
-
-=back
-
-=head2 Arguments
-
-=over 4
-
-=cut
-    """
-    argumentGroup = OptionGroup(optionParser, pod2Head(pod),
-                                pod2Description(pod))
+    argumentGroup = OptionGroup(optionParser, 'Arguments')
     optionParser.add_option_group(argumentGroup)
 
-    pod = """
-
-=item I<xml>
-
-The XML input file containing docutils XML.
-
-=cut
-    """
-
-    argument1Group = OptionGroup(optionParser, *pod2Argument(pod))
+    argument1Group = OptionGroup(optionParser, 'xml',
+                                 'The XML input file containing docutils '
+                                 'XML.')
     optionParser.add_option_group(argument1Group)
 
-    pod = """
-
-=item I<rst>
-
-The optional output file containing reStructuredText.
-
-If not given output is put to C<STDOUT>.
-
-=cut
-    """
-    argument2Group = OptionGroup(optionParser, *pod2Argument(pod))
+    argument2Group = OptionGroup(
+        optionParser, 'rst',
+        'The optional output file containing reStructuredText. '
+        'If not given output is put to standard out.')
     optionParser.add_option_group(argument2Group)
 
-    pod = """
-
-=back
-
-=cut
-    """
     (options, args) = optionParser.parse_args()
 
     if len(args) < 1:
