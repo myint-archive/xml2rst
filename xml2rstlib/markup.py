@@ -29,9 +29,6 @@ class Inliner(docutils.parsers.rst.states.Inliner):
         self.parent = self.document
         remaining = docutils.utils.escape2null(text)
         checked = ''
-        processed = []
-        unprocessed = []
-        messages = []
         while remaining:
             original = remaining
             match = self.patterns.initial.search(remaining)
@@ -67,8 +64,6 @@ class Inliner(docutils.parsers.rst.states.Inliner):
         checked = re.sub('\x00', '\\\x00', checked)
         return docutils.utils.unescape(checked, 1)
 
-#
-
 
 class Text():
 
@@ -99,16 +94,3 @@ class Text():
         else:
             quoted = Text.inliner.quoteInline(text)
         return sep.join(quoted.split('\n'))
-
-# print(Text.plain("Some \\ back\slashes", ""))
-
-# indent
-# directive
-# field_names
-# substitution
-# inline markup
-# token
-# label
-# start_delimiter
-# end_delimiter
-# target_definition
