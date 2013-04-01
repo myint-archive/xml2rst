@@ -20,38 +20,14 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-"""
-Convert a docutils XML file to reStructuredText syntax.
-
-Do
-
-    perldoc xml2rst.py
-
-for a man page.
-"""
-
-from __future__ import print_function
-
-"""
-=head1 NAME
-
-xml2rst.py -- convert a docutils XML file to reStructuredText syntax
-
-=head1 SYNOPSIS
-
-B<xml2rst.py> [B<-v>] I<xml> [I<reST>]
-
-B<xml2rst.py> B<--help>
-
-=head1 DESCRIPTION
-
-Converts a docutils XML input file to reStructuredText source.
+"""Convert a docutils XML file to reStructuredText syntax.
 
 This can be used to transform another format to reStructuredText given you have
 a transformation to docutils XML.
 
-=cut
 """
+
+from __future__ import print_function
 
 
 import sys
@@ -64,10 +40,6 @@ from optparse import OptionGroup
 from xml2rstlib import rst_xslt
 
 
-"""
-@var options: Options given on the command line
-@type options: optparse.Values
-"""
 global options
 
 
