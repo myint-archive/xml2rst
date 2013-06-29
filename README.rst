@@ -22,48 +22,48 @@ three flavors:
 
 1. ``xml2rst.py``
 
-   This script uses ``xml2rstlib/xml2rst.xsl`` through the XSLT_ engine
-   available through the lxml_ package [#deb-lxml]_. It also uses
-   Python callbacks for some advanced functionality.
+    This script uses ``xml2rstlib/xml2rst.xsl`` through the XSLT_ engine
+    available through the lxml_ package [#deb-lxml]_. It also uses
+    Python callbacks for some advanced functionality.
 
-   This is the preferred method of using `xml2rst` but depends on the
-   lxml_ package. This is also what is installed normally.
+    This is the preferred method of using `xml2rst` but depends on the
+    lxml_ package. This is also what is installed normally.
 
-   .. [#deb-lxml] Under Debian based operating systems try ``apt-get
-      install python-lxml``.
+    .. [#deb-lxml] Under Debian based operating systems try
+        ``apt-get install python-lxml``.
 
-   Run ``xml2rst --help`` for information on how to run it.
+    Run ``xml2rst --help`` for information on how to run it.
 
 2. ``xml2rstlib/xml2rst-nopy.xsl``
 
-   This is the core XSLT_ script without using Python. It uses EXSLT_
-   and therefore needs an EXSLT_ capable XSLT_ processors such as
-   xsltproc_ [#deb-xsltproc]_.
+    This is the core XSLT_ script without using Python. It uses EXSLT_
+    and therefore needs an EXSLT_ capable XSLT_ processors such as
+    xsltproc_ [#deb-xsltproc]_.
 
-   If you can't use ``xml2rst.py`` because you don't have lxml_ you
-   may try this flavor. This version is no longer actively maintained,
-   though.
+    If you can't use ``xml2rst.py`` because you don't have lxml_ you
+    may try this flavor. This version is no longer actively maintained,
+    though.
 
-   .. [#deb-xsltproc] Under Debian based operating systems try
-      ``apt-get install xsltproc``.
+    .. [#deb-xsltproc] Under Debian based operating systems try
+        ``apt-get install xsltproc``.
 
-   Run ``perldoc xml2rstlib/xml2rst-nopy.xsl`` for information on how to
-   run it.
+    Run ``perldoc xml2rstlib/xml2rst-nopy.xsl`` for information on how to
+    run it.
 
 3. ``xml2rstlib/xml2rst-noexslt.xsl``
 
-   This version can be processed with every XSLT_ processor like
-   Xalan_ [#deb-xalan]_.
+    This version can be processed with every XSLT_ processor like
+    Xalan_ [#deb-xalan]_.
 
-   If you can use neither ``xml2rst.py`` nor ``xml2rst-nopy.xsl`` you
-   may try this flavor. This version is no longer actively maintained,
-   though.
+    If you can use neither ``xml2rst.py`` nor ``xml2rst-nopy.xsl`` you
+    may try this flavor. This version is no longer actively maintained,
+    though.
 
-   .. [#deb-xalan] Under Debian based operating systems try ``apt-get
-      install xalan``.
+    .. [#deb-xalan] Under Debian based operating systems try ``apt-get
+       install xalan``.
 
-   Run ``perldoc xml2rstlib/xml2rst-noexslt.xsl`` for information on how
-   to run it.
+    Run ``perldoc xml2rstlib/xml2rst-noexslt.xsl`` for information on how
+    to run it.
 
 Availability
 ============
